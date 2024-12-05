@@ -1,0 +1,44 @@
+{
+  "reviews": [
+    {
+      "id": 1,
+      "author_name": "Abdulrahman Alm",
+      "rating": 5,
+      "text": "Informative service and impeccable trust a superb experience with this very serious and helpful team. I was able to visit Doha with their driver who made me discover great places like local restaurants, guided me, and advised me. They took care of the transport as well as the reservation at very reasonable prices.",
+      "time": "2 months ago",
+      "avatar": "https://randomuser.me/api/portraits/men/7.jpg"
+    },
+    {
+      "id": 2,
+      "author_name": "Zaki Nasralla",
+      "rating": 5,
+      "text": "I had an incredible experience with Doha Pride Tourism! Their attention to detail and commitment to ensuring a memorable trip were outstanding. I highly recommend their tours, especially the cultural excursions that offer deep insights into Doha's heritage. Don't miss the chance to explore this fascinating city with Doha Pride Tourism - it's a journey you won't forget!",
+      "time": "a year ago",
+      "avatar":   "https://randomuser.me/api/portraits/men/6.jpg"
+    },
+    {
+      "id": 3,
+      "author_name": "Thomas Holman",
+      "rating": 5,
+      "text": "At arrivals we met a guy from Doha Pride and within a few minutes we sat in an A8L and cruised in the city. Very professional service. We enjoyed the city, and our driver Yasar Arafath was very kind.",
+      "time": "6 months ago",
+      "avatar": "https://randomuser.me/api/portraits/men/3.jpg"
+    },
+    {
+      "id": 4,
+      "author_name": "Muhammed Nabeel",
+      "rating": 5,
+      "text": "One of the best tours and transportation agencies in Doha, Qatar. I had a very good experience. Staff were amazingly professional and knowledgeable. Definitely recommendable.",
+      "time": "7 months ago",
+      "avatar": "https://randomuser.me/api/portraits/men/4.jpg"
+    },
+    {
+      "id": 5,
+      "author_name": "Rosmery Fares",
+      "rating": 5,
+      "text": "It’s my first time in Doha and I did a city tour with Emthiyas. He was very respectful, helpful, explained a lot about the city and the country, and was very patient with me when I wanted to go shopping at Souk Wakif. I highly recommend this tour, especially when you don’t have a lot of time, and especially with Emthiyas.",
+      "time": "a year ago",
+      "avatar": "https://randomuser.me/api/portraits/women/2.jpg"
+    }
+  ]
+}

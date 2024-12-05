@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html {
+  scroll-behavior: smooth;
+}
+.goog-te-gadget { 
+  @apply hidden !important; 
+}
+.goog-te-combo { 
+  @apply hidden !important; 
+}
+#google_translate_element { 
+  @apply hidden !important; 
+}
