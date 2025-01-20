@@ -8,8 +8,8 @@ import { BASE_URL } from '../../api/Route';
 import RecentTourActions from './RecentTourActions';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa';
-import { logout } from '../../utils/auth';
 import CurrencyTotals from './CurrencyTotals';
+import { adminLogout } from '../../utils/auth';
 
 export default function AdminHome() {
   const navigate = useNavigate();
@@ -40,7 +40,7 @@ export default function AdminHome() {
 
 
   const handleLogout = () => {
-    logout();
+    adminLogout()
   };
 
   const mainStats = [
@@ -104,12 +104,12 @@ export default function AdminHome() {
       hoverColor: "hover:bg-cyan-500",
       textColor: "text-orange-100",
     },
-   
+
   ];
 
   return (
     <div className="p-6 relative">
-       <div className="absolute top-2 right-2">
+      <div className="absolute top-2 right-2">
         <button
           onClick={handleLogout}
           className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md 
@@ -182,11 +182,13 @@ export default function AdminHome() {
             </div>
           ))}
         </div>
+        {JSON.parse(localStorage.getItem('user_type')) === 'admin' && (
 
-        <div className="mb-8">
-  <h2 className="text-xl font-bold mb-4">Currency Totals</h2>
-  <CurrencyTotals />
-</div>
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4">Currency Totals</h2>
+            <CurrencyTotals />
+          </div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold mb-4">Completed Transfer Bookings</h2>
@@ -224,40 +226,40 @@ export default function AdminHome() {
 
 
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mt-8'>
-  {JSON.parse(localStorage.getItem('user_type')) === 'admin' && (
-    <>
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Recent Tour Actions</h2>
-          <button
-            onClick={() => navigate('/all-recent-tour')}
-            className="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 
+          {JSON.parse(localStorage.getItem('user_type')) === 'admin' && (
+            <>
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">Recent Tour Actions</h2>
+                  <button
+                    onClick={() => navigate('/all-recent-tour')}
+                    className="px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 
                      transition-colors duration-200 text-sm flex items-center gap-1.5"
-          >
-            <span>View All</span>
-            <FaArrowRight size={12} />
-          </button>
-        </div>
-        <RecentTourActions />
-      </div>
+                  >
+                    <span>View All</span>
+                    <FaArrowRight size={12} />
+                  </button>
+                </div>
+                <RecentTourActions />
+              </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Recent Transfer Actions</h2>
-          <button
-            onClick={() => navigate('/all-recent-transfer')}
-            className="px-3 py-1.5 bg-green-500 text-white rounded-md hover:bg-green-600 
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">Recent Transfer Actions</h2>
+                  <button
+                    onClick={() => navigate('/all-recent-transfer')}
+                    className="px-3 py-1.5 bg-green-500 text-white rounded-md hover:bg-green-600 
                      transition-colors duration-200 text-sm flex items-center gap-1.5"
-          >
-            <span>View All</span>
-            <FaArrowRight size={12} />
-          </button>
+                  >
+                    <span>View All</span>
+                    <FaArrowRight size={12} />
+                  </button>
+                </div>
+                <RecentTransferActions />
+              </div>
+            </>
+          )}
         </div>
-        <RecentTransferActions />
-      </div>
-    </>
-  )}
-</div>
       </div>
     </div>
   );

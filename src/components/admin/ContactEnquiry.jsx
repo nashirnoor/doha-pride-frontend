@@ -21,7 +21,7 @@ const LoadingSpinner = () => (
     const fetchEnquiries = async () => {
       setLoading(true); // Start loading
       try {
-        const response = await axios.get(`${BASE_URL}api/contact-messages/`);
+        const response = await axios.get(`${BASE_URL}/contact-messages/`);
         setEnquiries(response.data);
         console.log(response.data);
       } catch (error) {
@@ -34,7 +34,7 @@ const LoadingSpinner = () => (
     const handleStatusChange = async (id, newStatus) => {
       setLoading(true); // Show loading during status update
       try {
-        await axios.patch(`${BASE_URL}api/contact-messages/${id}/`, {
+        await axios.patch(`${BASE_URL}/contact-messages/${id}/`, {
           status: newStatus
         });
         fetchEnquiries(); // Refresh the list

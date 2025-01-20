@@ -80,7 +80,8 @@ const HeroCarousel = () => {
       <div className="absolute inset-0 flex items-center">
         <div className="container mx-auto px-4">
           <div className="max-w-lg">
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-helvetica text-white mb-4 transition-all duration-300">
+            <h1 
+            className="text-4xl md:text-5xl lg:text-7xl font-helvetica text-white mb-4 transition-all duration-300">
               {slides[currentSlide].title}
             </h1>
             <p className="text-base md:text-xl text-white mb-6">

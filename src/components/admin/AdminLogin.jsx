@@ -17,7 +17,6 @@ export default function AdminLogin() {
         email,
         password
       });
-      console.log(response,"ress")
       const { user, access, refresh } = response.data;
       if (user.user_type !== 'admin' && user.user_type !== 'staff') {
         setError("Access denied. Admin or staff privileges required.");
@@ -26,14 +25,13 @@ export default function AdminLogin() {
       localStorage.setItem('access_token', access);
       localStorage.setItem('refresh_token', refresh);
       localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('user_type',JSON.stringify(user.user_type))
-      console.log(localStorage.getItem('user_type'),"lllll")
+      localStorage.setItem('user_type', JSON.stringify(user.user_type));
       navigate('/admin-home');
     } catch (err) {
+      // This will set the error message and keep you on the login page
       setError(err.response?.data?.error || "Login failed. Please try again.");
     }
   };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-200 to-cyan-200">
       <div className="max-w-md w-full mx-4">

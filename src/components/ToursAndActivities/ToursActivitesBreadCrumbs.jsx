@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { motion } from 'framer-motion';
 const ToursActivitesBreadCrumbs = () => {
     return (
         <div className="relative h-[200px] md:h-[250px] bg-[#145c74] overflow-hidden">
@@ -18,16 +18,32 @@ const ToursActivitesBreadCrumbs = () => {
               <div className="space-y-4 md:space-y-6">
                 {/* Title with Arabic-inspired decorative element */}
                 <div className="relative">
-                  <h1 className="text-4xl md:text-6xl text-white font-light tracking-wider">
+                  <motion.h1
+                   initial={{ opacity: 0, y: 50 }}
+                   whileInView={{ opacity: 1, y: 0 }}
+                   transition={{
+                     duration: 0.6,
+                     type: "spring",
+                     stiffness: 80
+                   }}
+                   className="text-4xl md:text-6xl text-white font-light tracking-wider">
                     Tours & Activities
                     <span className="absolute -right-8 md:-right-12 top-0 text-xl md:text-2xl text-white/20">●</span>
-                  </h1>
+                  </motion.h1>
                   <div className="absolute -left-4 md:-left-8 top-1/2 w-2 md:w-4 h-[2px] bg-white/40"></div>
                 </div>
     
-                <p className="text-lg md:text-xl text-white/80 font-sans tracking-wide pl-1">
+                <motion.p
+                 initial={{ opacity: 0, y: 50 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 transition={{
+                   duration: 0.6,
+                   type: "spring",
+                   stiffness: 80
+                 }}
+                 className="text-lg md:text-xl text-white/80 font-sans tracking-wide pl-1">
                   "Explore extraordinary experiences and unforgettable adventures across diverse destinations."
-                </p>
+                </motion.p>
     
                 <div className="flex items-center gap-2 md:gap-4 pl-1">
                   <a href="/" className="text-white/80 hover:text-white text-sm tracking-wider transition-all duration-300 group">

@@ -18,10 +18,9 @@ const RecentTransferActions = () => {
           }
         });
         setActions(response.data);
-        console.log(response,"llllds")
         setLoading(false);
       } catch (err) {
-        setError('Failed to load recent actions');
+        setError('Refresh to see latest Actions');
         setLoading(false);
       }
     };

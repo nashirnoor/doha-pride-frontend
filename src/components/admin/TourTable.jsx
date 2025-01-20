@@ -132,7 +132,7 @@
                 }
                 // Add pagination parameters
                 params.append('page', currentPage); // Add state for currentPage
-                params.append('page_size', 3);
+                params.append('page_size', 35);
                 const token = localStorage.getItem('access_token');
                 const response = await axios.get(`${BASE_URL}api/bookings-tour/?${params.toString()}`, {
                     headers: {
@@ -170,7 +170,7 @@
                 });
                 console.log(transformedData)
                 setTransfers(transformedData);
-                setTotalPages(Math.ceil(response.data.count / 3));
+                setTotalPages(Math.ceil(response.data.count / 35));
             } catch (error) {
                 console.error('Error fetching transfers:', error);
             } finally {

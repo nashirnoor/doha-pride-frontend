@@ -15,3 +15,61 @@ html {
 #google_translate_element { 
   @apply hidden !important; 
 }
+
+
+.slick-prev, 
+.slick-next {
+  width: 40px;
+  height: 40px;
+  z-index: 1;
+}
+
+.slick-prev::before, 
+.slick-next::before {
+  font-size: 40px;
+  color: #6c0d38;
+  /* opacity: 0.7; */
+}
+
+.slick-prev {
+  left: -50px;
+}
+
+.slick-next {
+  right: -50px;
+}
+
+.slick-prev:hover::before, 
+.slick-next:hover::before {
+  opacity: 1;
+  color: black;
+}
+
+@media (max-width: 640px) {
+  .slick-prev,
+  .slick-next {
+    width: 40px;
+    height: 40px;
+  }
+
+  .slick-prev::before,
+  .slick-next::before {
+    font-size: 40px;
+  }
+
+  .slick-prev {
+    left: 10px;
+    z-index: 10;
+  }
+
+  .slick-next {
+    right: 10px;
+    z-index: 10;
+  }
+
+  .slick-list {
+    overflow: visible !important;
+  }
+}
+
+

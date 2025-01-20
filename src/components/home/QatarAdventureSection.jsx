@@ -1,5 +1,8 @@
 import { FaCity, FaCar, FaCampground, FaMountainSun } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+
 const QatarAdventuresSection = () => {
   const adventures = [
     { title: 'City Tour', icon: FaCity, description: 'Explore the vibrant streets and modern marvels of Qatar\'s cities.' },
@@ -29,18 +32,34 @@ const QatarAdventuresSection = () => {
                 DISCOVER QATAR
               </div>
 
-              <h2 className="text-5xl font-serif leading-tight mb-8">
+              <motion.h2
+               initial={{ opacity: 0, y: 50 }}
+               whileInView={{ opacity: 1, y: 0 }}
+               transition={{
+                 duration: 0.6,
+                 type: "spring",
+                 stiffness: 80
+               }}
+               className="text-3xl md:text-5xl font-serif leading-tight mb-8">
                 Experience the Magic of
                 <span className="block mt-2 text-[#1c667e]">Qatar's Wonders</span>
-              </h2>
+              </motion.h2>
 
               <div className="bg-white rounded-xl border border-gray-100 p-8 shadow-sm mb-8 
                 hover:border-maroon/20 transition-all duration-300">
-                <p className="text-lg text-gray-600 leading-relaxed">
+                <motion.p 
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.6,
+                    type: "spring",
+                    stiffness: 80
+                  }}
+                className="text-lg text-gray-600 leading-relaxed">
                   Welcome to Doha Pride Tourism! We provide exceptional services for visitors in Qatar. 
                   Whether you want to explore the city on a private guided tour, enjoy a thrilling desert safari, 
                   or take a layover tour, we have the perfect experience waiting for you.
-                </p>
+                </motion.p>
               </div>
               <Link to='/tours-activities'>
               <button className="group inline-flex items-center justify-center w-full 
@@ -77,13 +96,29 @@ const QatarAdventuresSection = () => {
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-semibold text-[#1c667e] group-hover:text-maroon mb-3 transition-colors">
+                    <motion.h3 
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.6,
+                        type: "spring",
+                        stiffness: 80
+                      }}
+                    className="text-xl font-semibold text-[#1c667e] group-hover:text-maroon mb-3 transition-colors">
                       {adventure.title}
-                    </h3>
+                    </motion.h3>
 
-                    <p className="text-gray-600 mb-6 flex-grow">
+                    <motion.p 
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.6,
+                        type: "spring",
+                        stiffness: 80
+                      }}
+                    className="text-gray-600 mb-6 flex-grow">
                       {adventure.description}
-                    </p>
+                    </motion.p>
 
                     <div className="flex items-center">
                       <Link to='/tours-activities'>

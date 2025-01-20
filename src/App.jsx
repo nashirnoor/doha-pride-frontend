@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from './layout/Layout';
 import Home from "./pages/Customer/Home";
-// import About from "./pages/About";
 import ScrollToTop from "./components/ScrollToTop";
 import PublicRoute from "./components/routes/PublicRoute";
 import SignupPage from "./pages/SignupPage";
@@ -26,14 +25,23 @@ import AllRecentTransferActionsPage from "./pages/admin/AllRecentTransferActions
 import AllRecentTourActionsPage from "./pages/admin/AllRecentTourActionsPage";
 import BlogDetailPage from "./pages/Customer/BlogDetailPage";
 import AdminContactlist from "./pages/admin/AdminContactlist";
-import GoogleTranslate from "./components/GoogleTranslate";
+import { RedirectIfLoggedIn } from "./utils/agency/ProtectedRoute";
+import { ProtectedRoute } from "./utils/agency/ProtectedRoute";
+import { LoginProtection } from "./utils/admin/adminProtectedRoute";
+import { AdminProtectedRoute } from "./utils/admin/adminProtectedRoute";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <Router>
+                <ToastContainer />
+
       <ScrollToTop>
         <Routes>
+          
           <Route element={<Layout />}>
+
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/tours-activities" element={<ToursAndActivitesPage />} />
@@ -60,19 +68,112 @@ function App() {
               </PublicRoute>
             }
           />
-          <Route path="/transfer-admin" element={<TransferFormPage />} />
-          <Route path="/admin-home" element={<AdminHome />} />
-          <Route path="/admin-tour" element={<AdminTourPage />} />
-          <Route path='/admin' element={<AdminLoginPage />} />
+
+<Route 
+        path="/admin" 
+        element={
+          <LoginProtection>
+            <AdminLoginPage />
+          </LoginProtection>
+        } 
+      />
+
+      {/* Admin/Staff Protected Routes */}
+      <Route 
+        path="/admin-home" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <AdminHome />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/transfer-admin" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <TransferFormPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/admin-tour" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <AdminTourPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/all-recent-transfer" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <AllRecentTransferActionsPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/all-recent-tour" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <AllRecentTourActionsPage />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/contact-enquiry" 
+        element={
+          <ProtectedRoute requiredUserTypes={['admin', 'staff']}>
+            <AdminContactlist />
+          </ProtectedRoute>
+        } 
+      />
+
+
           <Route path="/driver-list" element={<DriverList />} />
-          <Route path="/agency-login" element={<AgencyLogin />} />
-          <Route path="/agency-home" element={<TravelAgencyHomePage />} />
-          <Route path="/agency-transfer" element={<TravelAgencyTransferBooking />} />
-          <Route path="/agency-tour" element={<TravelAgencyTourBooking />} />
-          <Route path="/all-recent-transfer" element={<AllRecentTransferActionsPage />} />
-          <Route path="/all-recent-tour" element={<AllRecentTourActionsPage />} />
-          <Route path="/contact-enquiry" element={<AdminContactlist />} />
-                   
+
+          <Route 
+        path="/agency-login" 
+        element={
+          <RedirectIfLoggedIn>
+            <AgencyLogin />
+          </RedirectIfLoggedIn>
+        } 
+      />
+
+      {/* Protected Home Route - Only for logged-in travel agencies */}
+      <Route 
+        path="/agency-home" 
+        element={
+          <ProtectedRoute requiredUserType="travel_agency">
+            <TravelAgencyHomePage />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Protected Transfer Booking Route */}
+      <Route 
+        path="/agency-transfer" 
+        element={
+          <ProtectedRoute requiredUserType="travel_agency">
+            <TravelAgencyTransferBooking />
+          </ProtectedRoute>
+        } 
+      />
+
+      {/* Protected Tour Booking Route */}
+      <Route 
+        path="/agency-tour" 
+        element={
+          <ProtectedRoute requiredUserType="travel_agency">
+            <TravelAgencyTourBooking />
+          </ProtectedRoute>
+        } 
+      />            
         </Routes>
       </ScrollToTop>
     </Router>

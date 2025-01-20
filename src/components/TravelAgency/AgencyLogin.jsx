@@ -27,7 +27,6 @@ export default function AgencyLogin() {
       localStorage.setItem('refresh_token', refresh);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('user_type',JSON.stringify(user.user_type))
-      console.log(localStorage.getItem('user_type'),"lllll")
       navigate('/agency-home');
     } catch (err) {
       setError(err.response?.data?.error || "Login failed. Please try again.");

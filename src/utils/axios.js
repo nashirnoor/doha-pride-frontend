@@ -18,6 +18,10 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
+      if (window.location.pathname === '/login') {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem('refresh_token');
@@ -36,15 +40,15 @@ axiosInstance.interceptors.response.use(
         const { access } = response.data;
         localStorage.setItem('access_token', access);
         
-        // Update the original request
         originalRequest.headers['Authorization'] = `Bearer ${access}`;
         
-        // Use the base axios instance to retry the original request
         return axios(originalRequest);
       } catch (error) {
         console.error('Refresh token error:', error.response?.data);
         localStorage.clear();
-        window.location.href = '/login';
+        if (window.location.pathname !== '/admin' && window.location.pathname !== '/agency-login') {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
     }

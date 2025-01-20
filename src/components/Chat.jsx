@@ -1,181 +1,170 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { MessageCircle, Send, X } from 'react-feather';
+import { BASE_URL } from '../api/Route';
 
 const Chat = ({ driverId, driverName, onClose }) => {
-    const [messages, setMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
-    const [socket, setSocket] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const messagesEndRef = useRef(null);
-    const currentUserId = localStorage.getItem('userId');
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
+  const messagesEndRef = useRef(null);
+  const userId = parseInt(localStorage.getItem('userId'));
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    const fetchChatHistory = async () => {
-        try {
-            setIsLoading(true);
-            const token = localStorage.getItem('access_token');
-            const response = await axios.get(`https://doha-pride-backend-2.onrender.com/chat-rooms/${driverId}/messages/`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                }
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch chat history');
-            }
-            
-            const data = await response.json();
-            console.log(data,"asdfsd")
-            const transformedMessages = data.map(message => ({
-                ...message,
-                sender: {
-                    ...message.sender,
-                    id: message.sender.id.toString() 
-                }
-            }));
-            setMessages(transformedMessages);
-        } catch (error) {
-            console.error('Error fetching chat history:', error);
-        } finally {
-            setIsLoading(false);
+  // Fetch chat messages
+  const fetchMessages = async () => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.get(
+        `${BASE_URL}chat/?partner_id=${driverId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
-    };
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error('Error fetching messages', error);
+    }
+  };
 
-    useEffect(() => {
-        fetchChatHistory();
-        const token = localStorage.getItem('access_token');
-        const ws = new WebSocket(`wss://doha-pride-backend-2.onrender.com/ws/chat/?token=${token}`);
-
-        ws.onopen = () => {
-            console.log('WebSocket Connected');
-            const connectionMessage = {
-                source: 'chat',
-                driver_id: driverId,
-                customer_id: currentUserId,
-                type: 'connection'
-            };
-            ws.send(JSON.stringify(connectionMessage));
-        };
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.source === 'chat' && data.message) {
-                const newMessage = {
-                    ...data.message,
-                    sender: {
-                        ...data.message.sender,
-                        id: data.message.sender.id.toString()
-                    }
-                };
-                setMessages(prev => [...prev, newMessage]);
-                scrollToBottom();
-            }
-        };
-
-        setSocket(ws);
-        return () => {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.close();
-            }
-        };
-    }, [driverId, currentUserId]);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    const sendMessage = () => {
-        if (newMessage.trim() && socket && socket.readyState === WebSocket.OPEN) {
-            const messageData = {
-                source: 'chat',
-                driver_id: driverId,
-                customer_id: currentUserId,
-                content: newMessage,
-                content_type: 'text',
-                isReply: false
-            };
-            const localMessage = {
-                content: newMessage,
-                created_at: new Date().toISOString(),
-                sender: {
-                    id: currentUserId.toString() 
-                }
-            };
-            setMessages(prev => [...prev, localMessage]);
-            socket.send(JSON.stringify(messageData));
-            setNewMessage('');
-            scrollToBottom();
+  // Check unread messages
+  const checkUnreadMessages = async () => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.get(
+        `${BASE_URL}unread-messages/?partner_id=${driverId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
+      );
+      setUnreadCount(response.data.unread_count);
+    } catch (error) {
+      console.error('Error checking unread messages', error);
+    }
+  };
+
+  // Send a new message
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
+  
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      await axios.post(
+        `${BASE_URL}chat/`,
+        {
+          receiver: driverId,  // Ensure this is explicitly sent
+          message: newMessage,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      
+      // Clear input and refresh messages
+      setNewMessage('');
+      fetchMessages();
+    } catch (error) {
+      console.error('Error sending message', error);
+      // Optionally show error to user
+      alert(error.response?.data?.error || 'Failed to send message');
+    }
+  };
+
+  // Polling setup
+  useEffect(() => {
+    // Initial fetch
+    fetchMessages();
+    checkUnreadMessages();
+
+    // Set up polling
+    const messageInterval = setInterval(fetchMessages, 5000);
+    const unreadInterval = setInterval(checkUnreadMessages, 10000);
+
+    // Cleanup intervals
+    return () => {
+      clearInterval(messageInterval);
+      clearInterval(unreadInterval);
     };
+  }, [driverId]);
 
-    const formatTime = (timestamp) => {
-        return new Date(timestamp).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    return (
-        <div className="fixed right-0 bottom-0 w-96 h-[600px] bg-white shadow-lg rounded-t-lg flex flex-col">
-            <div className="p-4 border-b bg-gray-100 flex justify-between items-center">
-                <h3 className="font-bold">{driverName}</h3>
-                <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
-            </div>
-
-            <div className="flex-1 p-4 overflow-y-auto">
-                {isLoading ? (
-                    <div className="flex justify-center items-center h-full">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                    </div>
-                ) : (
-                    messages.map((message, index) => {
-                        const isCurrentUser = message.sender.id === currentUserId;
-                        return (
-                            <div
-                                key={index}
-                                className={`mb-4 ${isCurrentUser ? 'text-right' : 'text-left'}`}
-                            >
-                                <div 
-                                    className={`inline-block p-3 rounded-lg max-w-[70%] break-words ${
-                                        isCurrentUser 
-                                            ? 'bg-blue-500 text-white' 
-                                            : 'bg-gray-200'
-                                    }`}
-                                >
-                                    {message.content}
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    {formatTime(message.created_at)}
-                                </div>
-                            </div>
-                        );
-                    })
-                )}
-                <div ref={messagesEndRef} />
-            </div>
-
-            <div className="p-4 border-t">
-                <div className="flex">
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                        className="flex-1 border rounded-l-lg p-2"
-                        placeholder="Type a message..."
-                    />
-                    <button
-                        onClick={sendMessage}
-                        className="bg-blue-500 text-white px-4 rounded-r-lg hover:bg-blue-600"
-                    >
-                        Send
-                    </button>
-                </div>
-            </div>
+  return (
+    <div className="flex flex-col h-[600px] max-h-[80vh]">
+      {/* Chat Header */}
+      <div className="bg-gray-100 p-4 flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <MessageCircle className="text-blue-600" size={24} />
+          <h2 className="text-lg font-semibold">{driverName}</h2>
+          {unreadCount > 0 && (
+            <span className="bg-red-500 text-white rounded-full px-2 py-1 text-xs">
+              {unreadCount}
+            </span>
+          )}
         </div>
-    );
+        <button 
+          onClick={onClose} 
+          className="text-gray-600 hover:text-gray-800"
+        >
+          <X size={24} />
+        </button>
+      </div>
+
+      {/* Messages Container */}
+      <div className="flex-grow overflow-y-auto p-4 space-y-3">
+        {messages.map((msg) => (
+          <div 
+            key={msg.id} 
+            className={`flex ${
+              msg.sender.id === userId 
+                ? 'justify-end' 
+                : 'justify-start'
+            }`}
+          >
+            <div 
+              className={`max-w-[70%] p-3 rounded-lg ${
+                msg.sender.id === userId 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 text-black'
+              }`}
+            >
+              {msg.message}
+              <div className="text-xs opacity-70 mt-1 text-right">
+                {new Date(msg.timestamp).toLocaleTimeString()}
+              </div>
+            </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Message Input */}
+      <div className="bg-gray-100 p-4 flex items-center gap-3">
+        <input 
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Type a message..."
+          className="flex-grow p-2 border rounded-lg"
+        />
+        <button 
+          onClick={sendMessage}
+          className="bg-blue-500 text-white p-2 rounded-full"
+        >
+          <Send size={20} />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default Chat;

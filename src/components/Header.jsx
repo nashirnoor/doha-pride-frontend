@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import GoogleTranslate from './GoogleTranslate';
+import { Link } from 'react-router-dom';
 
-
-const Header1 = () => {
+const Header = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isTranslateLoaded, setIsTranslateLoaded] = useState(false);
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+
+    // Navigation Items
     const navItems = [
         { name: 'HOME', link: '/' },
         { name: 'ABOUT US', link: '/about' },
@@ -13,44 +16,148 @@ const Header1 = () => {
         { name: 'BLOG', link: '/blog' },
         { name: 'CONTACT US', link: '/contact' }
     ];
-    const AuthButton = () => {
-        const user = localStorage.getItem('access_token');
 
-        if (user) {
-            return (
-                <a
-                    href="/profile"
-                    className="flex items-center justify-center w-8 h-8 rounded-full bg-maroon text-white hover:bg-cyan-600 transition duration-300"
-                >
-                    <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                        />
-                    </svg>
-                </a>
-            );
-        }
+
+    // Authentication Button Component
+    // const AuthButton = () => {
+    //     const user = localStorage.getItem('access_token');
+
+    //     return user ? (
+    //         <a
+    //             href="/profile"
+    //             className="bg-maroon text-white px-4 py-2 rounded-md hover:bg-cyan-600 transition duration-300 text-sm font-medium"
+    //         >
+    //             My profile
+    //         </a>
+    //     ) : (
+    //         <a
+    //             href="/login"
+    //             className="bg-maroon text-white px-4 py-2 rounded-md hover:bg-cyan-600 transition duration-300 text-sm font-medium"
+    //         >
+    //             Sign In
+    //         </a>
+    //     );
+    // };
+
+    const AuthButton = () => {
+        return <a
+            href="/transfer"
+            className="bg-maroon text-white px-4 py-2 rounded-md hover:bg-cyan-600 transition duration-300 text-sm font-medium"
+        >
+           Book Now
+        </a>
+    }
+
+    // Language Selector Component
+    const LanguageSelector = () => {
+        const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+        const [searchTerm, setSearchTerm] = useState('');
+
+        const languages = [
+            { code: 'en', name: 'English', flag: '🇺🇸' },
+            { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
+            { code: 'zh-CN', name: 'Chinese', flag: '🇨🇳' },
+            { code: 'fr', name: 'French', flag: '🇫🇷' },
+            { code: 'pt', name: 'Portuguese', flag: '🇵🇹' },
+            { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+            { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
+            { code: 'ru', name: 'Russian', flag: '🇷🇺' },
+            { code: 'de', name: 'German', flag: '🇩🇪' },
+            { code: 'ja', name: 'Japanese', flag: '🇯🇵' }
+        ];
+
+        const handleLanguageSelect = useCallback((langCode) => {
+            try {
+                setIsDropdownOpen(false);
+
+                if (window.google && window.google.translate) {
+                    // Find the language selector link
+                    const languageLinks = document.querySelectorAll('.goog-te-gadget-simple a');
+
+                    if (languageLinks.length > 0) {
+
+                        // Click the first language selector link to open dropdown
+                        languageLinks[0].click();
+
+                        // Wait a short moment for the dropdown to open
+                        setTimeout(() => {
+                            // Try to find and click the specific language
+                            const languageOptions = document.querySelectorAll('.goog-te-menu-value');
+
+                            const targetLanguageOption = Array.from(languageOptions).find(option =>
+                                option.textContent.toLowerCase().includes(
+                                    languages.find(l => l.code === langCode)?.name.toLowerCase()
+                                )
+                            );
+
+                            if (targetLanguageOption) {
+                                targetLanguageOption.click();
+
+                                // Update local state
+                                setCurrentLanguage(langCode);
+
+                            } else {
+                                console.warn(`Could not find language option for ${langCode}`);
+                            }
+                        }, 300);  // Small delay to allow dropdown to render
+                    } else {
+                        console.error('No language selector links found');
+                    }
+                } else {
+                    console.error('Google Translate not initialized');
+                }
+            } catch (error) {
+                alert('Unable to change language. Please try manual translation.');
+            }
+        }, []);
+
+        const filteredLanguages = languages.filter(lang =>
+            lang.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
         return (
-            <a
-                href="/login"
-                className="bg-maroon text-white px-4 py-2 rounded-md hover:bg-cyan-600 transition duration-300 text-sm font-medium"
-            >
-                Sign In
-            </a>
+            <div className="relative">
+                <div
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="cursor-pointer flex items-center space-x-2 bg-white p-2 rounded-md shadow-sm hover:bg-gray-100 transition"
+                >
+
+                    <span className="text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-languages"><path d="m5 8 6 6" /><path d="m4 14 6-6 2-3" /><path d="M2 5h12" /><path d="M7 2h1" /><path d="m22 22-5-10-5 10" /><path d="M14 18h6" /></svg>                        {/* {languages.find(l => l.code === currentLanguage)?.name || 'Translate'} */}
+                    </span>
+                </div>
+
+                {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div className="p-2">
+                            <input
+                                type="text"
+                                placeholder="Search languages"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md mb-2 text-sm focus:outline-none focus:ring-2 focus:ring-maroon"
+                            />
+                        </div>
+                        <div className="max-h-64 overflow-y-auto">
+                            {filteredLanguages.map((lang) => (
+                                <div
+                                    key={lang.code}
+                                    onClick={() => handleLanguageSelect(lang.code)}
+                                    className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer transition"
+                                >
+                                    <span className="mr-3 text-xl">{lang.flag}</span>
+                                    <span className="text-sm font-medium">{lang.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         );
     };
 
+    // Google Translate Setup Effect
     useEffect(() => {
-        // Function to load Google Translate script
         const loadGoogleTranslateScript = () => {
             return new Promise((resolve, reject) => {
                 // Check if script is already loaded
@@ -61,119 +168,87 @@ const Header1 = () => {
 
                 // Create script element
                 const script = document.createElement('script');
-                script.src = 'https://translate.google.com/translate_a/element.js';
+                script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
                 script.async = true;
+                script.defer = true;
 
-                script.onload = () => {
-                    // Wait a bit to ensure the script is fully loaded
-                    setTimeout(() => {
-                        if (window.google && window.google.translate) {
-                            resolve();
-                        } else {
-                            reject(new Error('Google Translate script failed to load'));
+                // Global initialization function
+                window.googleTranslateElementInit = () => {
+                    try {
+                        // Ensure the element is created in the DOM
+                        if (!document.getElementById('google_translate_element')) {
+                            const div = document.createElement('div');
+                            div.id = 'google_translate_element';
+                            div.style.display = 'none';
+                            document.body.appendChild(div);
                         }
-                    }, 1000);
+
+                        // Create Google Translate Element
+                        new window.google.translate.TranslateElement({
+                            pageLanguage: 'en',
+                            includedLanguages: 'en,ar,zh-CN,fr,pt,es,hi,ru,de,ja',
+                            layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+                            autoDisplay: false
+                        }, 'google_translate_element');
+
+                        setIsTranslateLoaded(true);
+                        resolve();
+                    } catch (error) {
+                        console.error('Google Translate initialization error:', error);
+                        reject(error);
+                    }
                 };
 
+                // Error and load handlers
+                script.onload = () => {
+                };
                 script.onerror = () => {
-                    reject(new Error('Failed to load Google Translate script'));
+                    console.error('Failed to load Google Translate script');
+                    reject(new Error('Script load error'));
                 };
 
+                // Append script to document
                 document.body.appendChild(script);
             });
         };
 
-        // Initialize Google Translate
-        const initializeGoogleTranslate = () => {
-            try {
-                // Ensure we have the Google Translate object
-                if (window.google && window.google.translate) {
-                    new window.google.translate.TranslateElement({
-                        pageLanguage: 'en',
-                        includedLanguages: 'en,ar,zh-CN,fr,pt,es',
-                        layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
-                        autoDisplay: false
-                    }, 'google_translate_element');
-                }
-            } catch (error) {
-                console.error('Google Translate initialization error:', error);
-            }
-        };
+        // Load translation script
+        loadGoogleTranslateScript()
+            .then(() => {
+                // console.log('Translation setup complete');
+            })
+            .catch(error => {
+                console.error('Translation setup failed:', error);
+            });
 
-        // Alternative translation trigger method
-        const triggerTranslation = () => {
-            try {
-                // Multiple methods to trigger translation
-                const methods = [
-                    () => document.querySelector('.goog-te-combo')?.click(),
-                    () => document.querySelector('.goog-te-gadget-simple')?.click(),
-                    () => {
-                        const select = document.querySelector('select.goog-te-combo');
-                        if (select) {
-                            select.value = select.options[1].value; 
-                            const event = new Event('change', { bubbles: true });
-                            select.dispatchEvent(event);
-                        }
-                    }
-                ];
-
-                // Try each method
-                for (const method of methods) {
-                    method();
-                    if (document.querySelector('.goog-te-menu-value')) break;
-                }
-            } catch (error) {
-                console.error('Translation trigger error:', error);
-            }
-        };
-
-        // Main execution
-        const setupTranslation = async () => {
-            try {
-                await loadGoogleTranslateScript();
-
-                // Ensure Google Translate is initialized
-                window.googleTranslateElementInit = initializeGoogleTranslate;
-
-                // Call initialization
-                initializeGoogleTranslate();
-            } catch (error) {
-                console.error('Google Translate setup failed:', error);
-            }
-        };
-
-        // Run setup
-        setupTranslation();
-
-        // Attach translation trigger to the icon
-        const translationIcon = document.querySelector('#translation-icon');
-        if (translationIcon) {
-            translationIcon.addEventListener('click', triggerTranslation);
-        }
-
-        // Cleanup
+        // Cleanup function
         return () => {
+            // Remove any lingering translate elements
             const translateElements = document.querySelectorAll('[class^="goog-te-"]');
             translateElements.forEach(el => el.remove());
         };
     }, []);
 
-
-
-
     return (
         <>
-
             <header className="bg-gray-100 shadow-md">
-                <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+                    {/* Logo */}
                     <div className="flex items-center">
-                        <img src='navbarlogo.svg' alt="Logo" className=" w-auto md:h-20 h-12" />
+                        <Link to='/'>
+                            <img src='navbarlogo.svg' alt="Logo" className="w-auto md:h-20 h-12" />
+
+                        </Link>
                     </div>
 
+                    {/* Desktop Navigation */}
                     <nav className="hidden md:flex space-x-4">
                         {navItems.map((item, index) => (
                             <React.Fragment key={item.name}>
-                                <a href={item.link} className="text-gray-900 hover:text-maroon transition duration-300 uppercase font-bold text-sm">
+                                <a
+                                    href={item.link}
+                                    className="text-gray-900 hover:text-maroon transition duration-300 uppercase font-bold text-base"
+                                >
                                     {item.name}
                                 </a>
                                 {index < navItems.length - 1 && (
@@ -183,39 +258,37 @@ const Header1 = () => {
                         ))}
                     </nav>
 
+                    {/* Desktop Right Section */}
                     <div className="hidden md:flex items-center space-x-4">
-                        {/* Google Translate Icon */}
-                        <div
-                            id="translation-icon"
-                            className="relative cursor-pointer"
-                        >
-                            {/* Existing SVG code */}
-                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0 0 50 50">
-<path d="M 6 3 C 4.300781 3 3 4.300781 3 6 L 3 26 C 3 27.699219 4.300781 29 6 29 L 6.0625 29 L 10.46875 23.71875 L 10.78125 23.34375 C 10.476563 23.460938 10.273438 23.542969 10.21875 23.5625 L 9.59375 21.65625 C 9.648438 21.636719 12.394531 20.699219 15.0625 18.8125 C 12.503906 16.488281 11.207031 14.121094 11.125 13.96875 L 12.875 13.03125 C 12.894531 13.066406 14.167969 15.34375 16.65625 17.53125 C 18.265625 16.078125 19.625 14.230469 19.9375 12 L 8 12 L 8 10 L 16 10 L 16 8 L 18 8 L 18 10 L 25 10 L 25 12 L 21.9375 12 C 21.640625 14.789063 20.132813 17.035156 18.28125 18.78125 C 19.03125 19.300781 19.847656 19.777344 20.75 20.1875 C 21.617188 19.449219 22.742188 19 24 19 L 29 19 L 29 6 C 29 4.300781 27.699219 3 26 3 Z M 16.6875 20.125 C 15.246094 21.203125 13.75 22 12.5625 22.5625 L 13.53125 23.71875 L 17.9375 29 L 19 29 L 19 24 C 19 23.214844 19.1875 22.46875 19.5 21.8125 C 18.464844 21.308594 17.53125 20.742188 16.6875 20.125 Z M 24 21 C 22.300781 21 21 22.300781 21 24 L 21 32.0625 L 26.28125 36.46875 L 28.125 38 L 26.28125 39.53125 L 21 43.9375 L 21 44 C 21 45.699219 22.300781 47 24 47 L 44 47 C 45.699219 47 47 45.699219 47 44 L 47 24 C 47 22.300781 45.699219 21 44 21 Z M 12 25 L 7 31 L 10 31 L 10 35 L 14 35 L 14 31 L 17 31 Z M 33 26.40625 L 35.09375 26.40625 L 40.3125 40.1875 L 37.8125 40.1875 L 36.6875 37 L 31.40625 37 L 30.3125 40.1875 L 27.8125 40.1875 Z M 34 29.40625 L 32 35.09375 L 36 35.09375 Z M 19 33 L 19 36 L 10 36 L 14 40 L 19 40 L 19 43 L 25 38 Z"></path>
-</svg>
-                        </div>
+                        <LanguageSelector />
 
                         {/* Hidden Google Translate Element */}
-                        {/* Sign In Button */}
-                        <AuthButton />
-                        <div id="google_translate_element"></div>
+                        <div
+                            id="google_translate_element"
+                            style={{
+                                position: 'absolute',
+                                top: '-9999px',
+                                visibility: 'hidden'
+                            }}
+                        />
 
+                        <AuthButton />
                     </div>
 
-                    {/* Mobile Menu Button */}
+                    {/* Mobile Menu Toggle */}
                     <div className="md:hidden flex items-center space-x-4">
-
+                        <LanguageSelector />
 
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             className="text-gray-800 hover:text-maroon focus:outline-none"
                         >
                             {isMenuOpen ? (
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             ) : (
-                                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             )}
@@ -223,6 +296,7 @@ const Header1 = () => {
                     </div>
                 </div>
 
+                {/* Mobile Menu Dropdown */}
                 <AnimatePresence>
                     {isMenuOpen && (
                         <motion.div
@@ -232,12 +306,12 @@ const Header1 = () => {
                             transition={{ duration: 0.3 }}
                             className="md:hidden bg-gray-100"
                         >
-                            <div className="container mx-auto px-4 py-2">
+                            <div className="container mx-auto px-4 py-6 text-center">
                                 {navItems.map((item) => (
                                     <a
                                         href={item.link}
                                         key={item.name}
-                                        className="block py-2 text-gray-800 hover:text-maroon transition duration-300 uppercase font-semibold text-sm"
+                                        className="block py-4 text-gray-800 hover:text-maroon transition duration-300 uppercase font-semibold text-sm"
                                     >
                                         {item.name}
                                     </a>
@@ -254,4 +328,4 @@ const Header1 = () => {
     );
 };
 
-export default Header1;
+export default Header;

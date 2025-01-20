@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { useState,useEffect } from 'react';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { logout } from '../../utils/auth';
+import { agencyLogout } from '../../utils/auth';
 import { BASE_URL } from '../../api/Route';
 
 
@@ -58,7 +59,7 @@ export default function TravelAgencyDashboard() {
   }, []);
 
   const handleLogout = () => {
-    logout();
+    agencyLogout();
   };
 
   const stats = [

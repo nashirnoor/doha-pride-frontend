@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getTransferData } from '../api/Route';
 import { Modal, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import axios from 'axios';
 import { ArrowRight, Check, ArrowLeft } from 'lucide-react';
 import axiosInstance from "../utils/axios"
 

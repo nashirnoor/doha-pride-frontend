@@ -1,10 +1,8 @@
 import axios from 'axios';
 
 export const BASE_URL = 'http://127.0.0.1:8000/';
-// export const SOCKET_BASE_URL = 'ws://127.0.0.1:8000/';
-
-
 // export const BASE_URL = 'https://doha-pride-backend-2.onrender.com/';
+
 export const SOCKET_BASE_URL = 'wss://doha-pride-backend-2.onrender.com'
 
 

@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { getContactDetails } from '../../api/Route';
 import axios from 'axios';
+import { toast } from "react-toastify";
+
 import { BASE_URL } from '../../api/Route';
+
+
 
 const ContactComponent = () => {
   const [contact, setContact] = useState({
@@ -25,8 +29,16 @@ const ContactComponent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${BASE_URL}contact-messages/`, formData);
-      alert("Message sent successfully!");
+      const response = await axios.post(`${BASE_URL}/contact-messages/`, formData);
+      toast.success("Message sent successfully!", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
       setFormData({
         name: "",
         email: "",
@@ -34,16 +46,22 @@ const ContactComponent = () => {
         message: "",
       });
     } catch (error) {
-      console.error("Error sending message:", error);
-      alert("Failed to send message.");
+      console.error("Error sending message:", error.response ? error.response.data : error);
+      toast.error("Failed to send message.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
-
   useEffect(() => {
     const fetchContactDetails = async () => {
       try {
         const data = await getContactDetails();
-        console.log(data, "asdf")
         const limitedContact = {
           email: Array.isArray(data.email) ? data.email[0] : data.email,
           phone_number: Array.isArray(data.phone_number) ? data.phone_number[0] : data.phone_number,
@@ -73,7 +91,7 @@ const ContactComponent = () => {
               </div>
               <div className="flex items-center">
                 <FaPhone className="text-2xl mr-4 text-maroon" />
-                <span className="text-lg">{contact.phone_number}</span>
+                <span className="text-lg">+{contact.phone_number}</span>
               </div>
               <div className="flex items-center">
                 <FaMapMarkerAlt className="text-2xl mr-4 text-maroon" />
@@ -102,57 +120,57 @@ const ContactComponent = () => {
             <h2 className="text-3xl font-semibold mb-8 text-maroon">Send Us a Message</h2>
 
             <form className="space-y-6" onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="name" className="block mb-2 font-medium text-black">Name</label>
-        <input
-          type="text"
-          id="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
-          placeholder="Enter your name"
-        />
-      </div>
-      <div>
-        <label htmlFor="email" className="block mb-2 font-medium text-black">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
-          placeholder="Enter your email"
-        />
-      </div>
-      <div>
-        <label htmlFor="phone" className="block mb-2 font-medium text-black">Phone</label>
-        <input
-          type="text"
-          id="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
-          placeholder="Enter number with country code"
-        />
-      </div>
-      <div>
-        <label htmlFor="message" className="block mb-2 font-medium text-black">Message</label>
-        <textarea
-          id="message"
-          rows="4"
-          value={formData.message}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
-          placeholder="Enter your message"
-        ></textarea>
-      </div>
-      <button
-        type="submit"
-        className="w-full bg-maroon text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-300 text-lg font-semibold"
-      >
-        Send Message
-      </button>
-    </form>
+              <div>
+                <label htmlFor="name" className="block mb-2 font-medium text-black">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
+                  placeholder="Enter your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block mb-2 font-medium text-black">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block mb-2 font-medium text-black">Phone</label>
+                <input
+                  type="text"
+                  id="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
+                  placeholder="Enter number with country code"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block mb-2 font-medium text-black">Message</label>
+                <textarea
+                  id="message"
+                  rows="4"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-maroon"
+                  placeholder="Enter your message"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-maroon text-white py-3 px-6 rounded-lg hover:bg-opacity-90 transition duration-300 text-lg font-semibold"
+              >
+                Send Message
+              </button>
+            </form>
           </div>
         </div>
       </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { getTransferData } from '../../api/Route';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
 
 
 const HomeTransfer = () => {
@@ -35,12 +37,28 @@ const HomeTransfer = () => {
     <div className="bg-slate-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl text-gray-900 sm:text-5xl font-serif">
+          <motion.h2 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              type: "spring",
+              stiffness: 80
+            }}
+          className="text-3xl text-gray-900 sm:text-5xl font-serif">
             Meet, Assist and Transfer Services
-          </h2>
-          <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4 font-sans">
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              type: "spring",
+              stiffness: 80
+            }}
+          className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4 font-sans">
             Explore our range of arrival and departure transfer services.
-          </p>
+          </motion.p>
         </div>
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -61,17 +79,33 @@ const HomeTransfer = () => {
                     alt={card.name}
                   />
                   <div className="p-6">
-                    <h3 className="text-lg font-medium text-gray-900 font-serif">
+                    <motion.h3
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.6,
+                        type: "spring",
+                        stiffness: 80
+                      }}
+                     className="text-lg font-medium text-gray-900 font-serif">
                       {card.name}
-                    </h3>
-                    <div className="flex items-center justify-between mt-6">
+                    </motion.h3>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 50 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.6,
+                        type: "spring",
+                        stiffness: 80
+                      }}
+                    className="flex items-center justify-between mt-6">
                       <p className="text-xl font-bold text-maroon font-sans">
                         {card.cost} QAR
                       </p>
                       <button className="bg-maroon hover:bg-maroon-600 text-white font-bold py-2 px-4 rounded font-sans">
                         More
                       </button>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
                 </Link>

@@ -2,29 +2,23 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { BASE_URL } from '../../api/Route';
 
-
-
-export default function AgencyTourList( {refreshTrigger }) {
+export default function AgencyTourList({ refreshTrigger }) {
     const [editingCell, setEditingCell] = useState(null);
     const [showNotes, setShowNotes] = useState(false);
     const [transfers, setTransfers] = useState([]);
-
     const [drivers, setDrivers] = useState([]);
     const [driverSuggestions, setDriverSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
-
     const [tours, setTours] = useState([]);
     const [toursSuggestions, setToursSuggestions] = useState([]);
     const [showTourSuggestions, setShowTourSuggestions] = useState(false);
-
     const [showStatusSuggestions, setShowStatusSuggestions] = useState(false);
-
     const [hotels, setHotels] = useState([]);
     const [hotelSuggestions, setHotelSuggestions] = useState([]);
     const [showHotelSuggestions, setShowHotelSuggestions] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchBy, setSearchBy] = useState('id'); 
+    const [searchBy, setSearchBy] = useState('id');
     const tableRef = useRef(null);
     const inputRef = useRef(null);
     const [dateRange, setDateRange] = useState({
@@ -67,7 +61,7 @@ export default function AgencyTourList( {refreshTrigger }) {
             try {
                 await fetchDrivers();
                 await fetchToursBooking();
-                await fetchToursList(); 
+                await fetchToursList();
                 await fetchHotels();
             } catch (error) {
                 console.error('Error initializing data:', error);
@@ -101,7 +95,7 @@ export default function AgencyTourList( {refreshTrigger }) {
     const fetchToursList = async () => {
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.get(`${BASE_URL}api/travel-agency-tours/`, {  
+            const response = await axios.get(`${BASE_URL}api/travel-agency-tour/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -116,7 +110,7 @@ export default function AgencyTourList( {refreshTrigger }) {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('access_token');
-            const response = await axios.get(`${BASE_URL}api/travel-agency-tours/`, {
+            const response = await axios.get(`${BASE_URL}api/travel-agency-tour/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -137,7 +131,7 @@ export default function AgencyTourList( {refreshTrigger }) {
             });
             const currentDrivers = driversResponse.data;
             const currentTours = TourResponse.data;
-            console.log("Current tours",currentTours)
+            console.log("Current tours", currentTours)
 
             const transformedData = response.data.map(transfer => {
                 const tourData = currentTours.find(t => t.id === transfer.tour_activity);
@@ -146,15 +140,15 @@ export default function AgencyTourList( {refreshTrigger }) {
                     ...transfer,
                     driver_id: transfer.driver,
                     driver_name: driverUser?.username || '',
-                    tour_activity: tourData?.title || '',  
-                    tour_id: transfer.tour_activity,  
+                    tour_activity: tourData?.title || '',
+                    tour_id: transfer.tour_activity,
                 };
             });
             console.log(transformedData)
             setTransfers(transformedData);
         } catch (error) {
             console.error('Error fetching transfers:', error);
-        } finally{
+        } finally {
             setIsLoading(false)
         }
     };
@@ -168,12 +162,12 @@ export default function AgencyTourList( {refreshTrigger }) {
                     'Content-Type': 'application/json'
                 }
             });
-             const processedHotels = response.data.reduce((acc, hotel) => {
+            const processedHotels = response.data.reduce((acc, hotel) => {
                 acc.push({
                     id: hotel.id,
                     name: hotel.hotel_name,
                     isMainHotel: true
-                });                
+                });
                 hotel.subcategories.forEach(sub => {
                     acc.push({
                         id: sub.id,
@@ -182,10 +176,10 @@ export default function AgencyTourList( {refreshTrigger }) {
                         parentHotelName: hotel.hotel_name
                     });
                 });
-                
+
                 return acc;
             }, []);
-            
+
             setHotels(processedHotels);
         } catch (error) {
             console.error('Error fetching hotels:', error);
@@ -195,7 +189,7 @@ export default function AgencyTourList( {refreshTrigger }) {
     const columns = [
         { key: 'unique_code', header: 'ID' },
         { key: 'name', header: 'Guest' },
-        { key: 'tour_activity', header: 'Tourname'},
+        { key: 'tour_activity', header: 'Tourname' },
         { key: 'date', header: 'Date Schedule' },
         { key: 'time', header: 'Time' },
         { key: 'hotel_name', header: 'Hotel' },
@@ -216,7 +210,7 @@ export default function AgencyTourList( {refreshTrigger }) {
             setEditingCell({ id: transfer.id, columnKey });
             if (columnKey === 'status') {
                 setShowStatusSuggestions(true);
-            } else if (columnKey === 'hotel_name'){
+            } else if (columnKey === 'hotel_name') {
                 setShowHotelSuggestions(true)
             }
         }
@@ -240,7 +234,7 @@ export default function AgencyTourList( {refreshTrigger }) {
             );
             setDriverSuggestions(filtered);
             setShowSuggestions(true);
-        }else if (columnKey === 'tour_activity') {
+        } else if (columnKey === 'tour_activity') {
             transfer.tour_activity = value;  // This updates the displayed title
             const filtered = tours.filter(tour =>
                 tour.title.toLowerCase().includes(value.toLowerCase())
@@ -261,7 +255,7 @@ export default function AgencyTourList( {refreshTrigger }) {
             );
             setHotelSuggestions(filtered);
             setShowHotelSuggestions(true);
-         } else {
+        } else {
             transfer[columnKey] = value;
         }
 
@@ -301,19 +295,19 @@ export default function AgencyTourList( {refreshTrigger }) {
         const updatedTransfers = [...transfers];
         const transferIndex = updatedTransfers.findIndex(t => t.id === transferId);
         if (transferIndex === -1) return;
-    
+
         const transfer = updatedTransfers[transferIndex];
-        
-        transfer.hotel_name = hotel.isMainHotel ? 
-            hotel.name : 
+
+        transfer.hotel_name = hotel.isMainHotel ?
+            hotel.name :
             `${hotel.name} (${hotel.parentHotelName})`;
-        
+
         transfer.hotel = hotel.id;
-        
+
         setTransfers(updatedTransfers);
         setShowHotelSuggestions(false);
         setEditingCell(null);
-    
+
         try {
             await updateTransfer(transfer);
         } catch (error) {
@@ -373,9 +367,9 @@ export default function AgencyTourList( {refreshTrigger }) {
                 status: transfer.status?.toLowerCase()
             };
 
-        delete updateData.driver_id;
-        delete updateData.driver_name;
-        delete updateData.tour_id;
+            delete updateData.driver_id;
+            delete updateData.driver_name;
+            delete updateData.tour_id;
 
             const response = await axios.patch(
                 `${BASE_URL}api/bookings-tour/${transfer.id}/`,
@@ -520,29 +514,28 @@ export default function AgencyTourList( {refreshTrigger }) {
                             }}
                         />
                         {showHotelSuggestions && (
-    <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
-        {hotelSuggestions.map((hotel) => (
-            <div
-                key={hotel.id}
-                className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    hotel.isMainHotel ? 'font-semibold' : 'pl-8'
-                }`}
-                onMouseDown={(e) => {
-                    e.preventDefault();
-                    handleSelectHotel(hotel, transfer.id);
-                }}
-            >
-                {hotel.isMainHotel ? (
-                    hotel.name
-                ) : (
-                    <span>
-                        {hotel.name} <span className="text-gray-500">({hotel.parentHotelName})</span>
-                    </span>
-                )}
-            </div>
-        ))}
-    </div>
-)}
+                            <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                {hotelSuggestions.map((hotel) => (
+                                    <div
+                                        key={hotel.id}
+                                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${hotel.isMainHotel ? 'font-semibold' : 'pl-8'
+                                            }`}
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            handleSelectHotel(hotel, transfer.id);
+                                        }}
+                                    >
+                                        {hotel.isMainHotel ? (
+                                            hotel.name
+                                        ) : (
+                                            <span>
+                                                {hotel.name} <span className="text-gray-500">({hotel.parentHotelName})</span>
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 );
             }
@@ -596,14 +589,14 @@ export default function AgencyTourList( {refreshTrigger }) {
 
             return (
                 <input
-                ref={inputRef}
-                type="text"
-                value={transfer[column.key] || ''}
-                onChange={(e) => handleCellChange(e, transfer.id, column.key)}
-                onKeyDown={(e) => handleKeyDown(e, transfer.id, column.key)}
-                onBlur={() => setEditingCell(null)}
-                className="w-full p-1 border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+                    ref={inputRef}
+                    type="text"
+                    value={transfer[column.key] || ''}
+                    onChange={(e) => handleCellChange(e, transfer.id, column.key)}
+                    onKeyDown={(e) => handleKeyDown(e, transfer.id, column.key)}
+                    onBlur={() => setEditingCell(null)}
+                    className="w-full p-1 border-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
             );
         }
 
@@ -674,44 +667,43 @@ export default function AgencyTourList( {refreshTrigger }) {
                     </div>
                 </div>
                 {isLoading ? (
-    <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-    </div>
-) : (
-                <div className="overflow-x-auto">
-                <table ref={tableRef} className="w-full border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            {visibleColumns.map((column) => (
-                                <th
-                                    key={column.key}
-                                    className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-200"
-                                >
-                                    {column.header}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredTransfers.map((transfer) => (
-                            <tr key={transfer.id} className="hover:bg-gray-50">
-                                {visibleColumns.map((column) => (
-                                    <td
-                                        key={column.key}
-                                        className={`px-3 py-2 text-sm border border-gray-200 ${
-                                            column.key === 'unique_code' ? 'cursor-default' : 'cursor-pointer'
-                                        }`}
-                                        onClick={() => handleCellClick(transfer, column.key)}
-                                    >
-                                        {renderCell(transfer, column)}
-                                    </td>
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table ref={tableRef} className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-gray-100">
+                                    {visibleColumns.map((column) => (
+                                        <th
+                                            key={column.key}
+                                            className="px-3 py-2 text-xs font-semibold text-gray-700 border border-gray-200"
+                                        >
+                                            {column.header}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredTransfers.map((transfer) => (
+                                    <tr key={transfer.id} className="hover:bg-gray-50">
+                                        {visibleColumns.map((column) => (
+                                            <td
+                                                key={column.key}
+                                                className={`px-3 py-2 text-sm border border-gray-200 ${column.key === 'unique_code' ? 'cursor-default' : 'cursor-pointer'
+                                                    }`}
+                                                onClick={() => handleCellClick(transfer, column.key)}
+                                            >
+                                                {renderCell(transfer, column)}
+                                            </td>
+                                        ))}
+                                    </tr>
                                 ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-)}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
 
                 {!isLoading && filteredTransfers.length === 0 && (
                     <div className="text-center py-8 text-gray-500">

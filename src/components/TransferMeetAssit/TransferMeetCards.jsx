@@ -59,52 +59,14 @@ const TransferMeetCards = () => {
         setIsModalOpen(false);
     };
 
-    if (loading) {
-        return (
-            <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-b from-cyan-50 to-white">
-                {/* Main animation container */}
-                <div className="relative w-40 h-40 mb-4">
-                    {/* Pearl building silhouette */}
-                    <svg 
-                        className="absolute w-24 h-24 left-1/2 transform -translate-x-1/2 text-cyan-600 opacity-20"
-                        viewBox="0 0 24 24" 
-                        fill="currentColor"
-                    >
-                        <path d="M12 2L2 22h20L12 2zm0 3.5L19.5 20h-15L12 5.5z"/>
-                    </svg>
-    
-                    {/* Loading spinner */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-20 h-20 border-4 border-purple-200 border-t-cyan-600 rounded-full animate-spin"></div>
-                    </div>
-    
-                    {/* Decorative elements */}
-                    <div className="absolute bottom-0 w-full flex justify-center space-x-1">
-                        <div className="w-1 h-8 bg-cyan-500 animate-[bounce_1s_infinite_100ms]"></div>
-                        <div className="w-1 h-12 bg-cyan-500 animate-[bounce_1s_infinite_200ms]"></div>
-                        <div className="w-1 h-16 bg-maroon animate-[bounce_1s_infinite_300ms]"></div>
-                        <div className="w-1 h-12 bg-cyan-500 animate-[bounce_1s_infinite_400ms]"></div>
-                        <div className="w-1 h-8 bg-cyan-500 animate-[bounce_1s_infinite_500ms]"></div>
-                    </div>
-                </div>
-    
-                {/* Text content */}
-                <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-bold bg-black bg-clip-text text-transparent">
-                        Qatar Awaits
-                    </h3>
-                    <p className="text-sm text-cyan-600">
-                        Preparing your luxurious experience...
-                    </p>
-                    <div className="flex justify-center space-x-2 text-maroon">
-                        <span className="animate-pulse">•</span>
-                        <span className="animate-pulse delay-100">•</span>
-                        <span className="animate-pulse delay-200">•</span>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const LoadingSpinner = () => (
+        <div className="w-full h-[75vh] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-cyan-600"></div>
+        </div>
+      );
+      if(loading){
+        return <LoadingSpinner />
+      }
 
     if (error) {
         return <div className="text-center text-2xl text-maroon">Error: {error}</div>;
